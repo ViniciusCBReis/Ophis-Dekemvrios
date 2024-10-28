@@ -11,6 +11,7 @@ model_paths = [
     "Modelos/treinamento_equip/weights/best.pt",
     "Modelos/treinamento_ferr1/weights/best.pt",
     "Modelos/treinamento_ferr12/weights/best.pt",
+    "Modelos/treinamento_concrto/weights/best.pt",
 ]
 models = [YOLO(path) for path in model_paths]
 
@@ -26,24 +27,27 @@ def open_image():
 
     for idx, model in enumerate(models):
         if model_active[idx].get():
-            results = model.predict(file_path, save=True, project="Previsoes", name=f"model_{idx}_exp", exist_ok=True)
+            results = model.predict(file_path, save=True, project="D:/Projetos/OphisDekemvrios/Previsoes", name=f"model_{idx}_exp", exist_ok=True)
 
-            predicted_image_path = os.path.join("Previsoes", f"model_{idx}_exp", os.path.basename(file_path))
+            print(f"Diretório salvo para o Modelo {idx + 1}: {results[0].save_dir}")
+            print(f"Arquivo original: {os.path.basename(file_path)}")
+
+            predicted_image_path = os.path.join(str(results[0].save_dir), os.path.basename(file_path))
 
             if os.path.exists(predicted_image_path):
                 display_image(predicted_image_path, title=f"Resultado do Identificador {idx + 1}")
             else:
-                print(f"Erro: A imagem predita para o Modelo {idx + 1} não foi encontrada.")
+                print(f"Erro: A imagem predita para o Modelo {idx + 1} não foi encontrada no caminho {predicted_image_path}.")
 
 def display_image(image_path, title="Resultado"):
-    # Cria uma nova aba
+
     frame = ttk.Frame(notebook)
     notebook.add(frame, text=title)
 
-    # Carrega e redimensiona a imagem
     img = Image.open(image_path)
     img.thumbnail((400, 400))
     img = ImageTk.PhotoImage(img)
+
 
     img_label = ttk.Label(frame, image=img)
     img_label.image = img
